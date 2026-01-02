@@ -31,17 +31,14 @@
 // Available virtual files:
 // - "/_data/pages.json": List of all pages with their metadata (url, title, date, etc.)
 // - "/_data/tags.json": Map of tags to the pages that use them
+// - ...more in the future!
 #let pages = json("/_data/pages.json")
-#let posts = (
-  pages
-    .filter(p => "/posts/" in p.url and p.at("draft", default: false) == false)
-    .sorted(
-      key: p => p.date,
-    )
-    .rev()
-)
+#let posts = (pages
+  .filter(p => "/posts/" in p.url)
+  .filter(p => p.at("draft", default: false) == false)
+  .sorted(key: p => p.date)
+  .rev())
 
-#let posts = utils.get-posts()
 #html.div(class: "space-y-6")[
   #for post in posts.slice(0, calc.min(posts.len(), 5)) {
     utils.post-card(post)

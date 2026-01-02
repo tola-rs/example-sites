@@ -26,13 +26,6 @@
 // - Filters for pages with "/posts/" anywhere in URL (supports path_prefix)
 // - Excludes drafts
 // - Sorts by date (newest first)
-#let get-posts() = {
-  let pages = json("/_data/pages.json")
-  pages
-    .filter(p => "/posts/" in p.url and p.at("draft", default: false) == false)
-    .sorted(key: p => p.date)
-    .rev()
-}
 
 // Helper to render a consistent post card
 // - post: The post object from get-posts()
