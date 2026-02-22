@@ -2,7 +2,7 @@
 # Tola Configuration
 # ==============================================================================
 
-[base]
+[site.info]
 title = "My Blog"
 author = "Your Name"
 email = "you@example.com"
@@ -10,19 +10,40 @@ description = "A blog built with Typst and Tola"
 language = "en"
 url = "https://tola-ssg.github.io/example-sites/starter"
 
+[site.info.extra]
+
+[site.header]
+# icon = "assets/images/favicon.ico"
+# styles = ["assets/styles/custom.css"]
+# scripts = [{ path = "assets/scripts/app.js", defer = true }]
+elements = ['<meta name="darkreader-lock">']
+
+[site.nav]
+enable = true
+transition = {style = "fade", time = 200}
+
+[site.seo]
+auto_og = true
+
+[site.seo.feed]
+enable = false
+
+[site.seo.sitemap]
+enable = false
+path = "sitemap.xml"
+
 [build]
 content = "content"
 output = "public"
-assets = "assets"
 minify = true
+deps = ["templates", "utils", "components"]
 
-[build.rss]
-enable = false
-path = "feed.xml"
-
-[build.sitemap]
-enable = false
-path = "sitemap.xml"
+[build.assets]
+nested = [
+  "assets/images",
+  "assets/styles",
+  "assets/fonts"
+]
 
 [build.slug]
 path = "safe"
@@ -30,42 +51,15 @@ fragment = "full"
 separator = "dash"
 case = "lower"
 
-[build.typst]
-use_lib = true
-
-[build.typst.svg]
-extract_type = "embedded"
-dpi = 96.0
-
-[build.css]
-auto_enhance = true
-
 # Tailwind CSS - enabled by default in this template
 # Make sure tailwindcss is installed: npm install -g tailwindcss
-[build.css.tailwind]
+[build.hooks.css]
 enable = true
-input = "assets/styles/tailwind.css"
+path = "assets/styles/tailwind.css"
 command = ["tailwindcss"]
 
-[build.head]
-# icon = "assets/images/favicon.ico"
-# styles = ["assets/styles/custom.css"]
-# scripts = [{ path = "assets/scripts/app.js", defer = true }]
-elements = ['<meta name="darkreader-lock">']
 
 [serve]
 interface = "127.0.0.1"
 port = 5277
 watch = true
-
-[deploy]
-provider = "github"
-force = false
-
-[deploy.github]
-url = "https://github.com/username/username.github.io"
-branch = "main"
-
-[extra]
-# Add custom data here
-

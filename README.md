@@ -2,7 +2,7 @@
 
 A collection of example sites and templates built with [Tola](https://github.com/tola-rs/tola-ssg) - a static site generator powered by Typst.
 
-> **⚠️ Note**: CSS tooling support is still evolving. The current architecture is under consideration, and these examples are currently limited to **Tailwind CSS** only.
+> **Note**: CSS tooling support is still evolving. The current architecture is under consideration, and these examples are currently limited to **Tailwind CSS** only.
 
 ## Examples
 

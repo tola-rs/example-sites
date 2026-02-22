@@ -1,7 +1,8 @@
 // Base template with shared configuration and layout
 // Import: #import "/templates/base.typ": base, colors
 
-#import "/utils/helpers.typ" as utils
+#import "/templates/tola.typ" as tola
+#import "/utils/tola.typ": cls
 
 // ============================================================================
 // Configuration
@@ -19,6 +20,17 @@
 
 #let base(body) = {
   // --------------------------------------------------------------------------
+  // Inherit Tola base (figure/table/math handling)
+  // --------------------------------------------------------------------------
+
+  show: tola.tola-base.with(
+    figure-class: "my-6 mx-auto w-fit",
+    math-inline-class: "inline-flex align-middle text-lg",
+    math-block-class: "my-6 flex justify-center text-2xl",
+    math-font: "Luciole Math",
+  )
+
+  // --------------------------------------------------------------------------
   // Show Rules: Lists
   // --------------------------------------------------------------------------
 
@@ -33,7 +45,7 @@
   // Show Rules: Code
   // --------------------------------------------------------------------------
 
-  show raw.where(block: false): it => html.code(class: "font-semibold " + colors.code)[#it.text]
+  show raw.where(block: false): it => html.code(class: cls("font-semibold", colors.code))[#it.text]
 
   // Default: Typst native syntax highlighting
   // Note: The inner <pre> tag already has background/padding styles from tailwind.css.
@@ -46,38 +58,11 @@
   // Show Rules: Text Elements
   // --------------------------------------------------------------------------
 
-  show quote: it => html.blockquote(class: "border-l-4 border-accent pl-4 my-4 italic " + colors.muted)[#it.body]
+  show quote: it => html.blockquote(class: cls("border-l-4 border-accent pl-4 my-4 italic", colors.muted))[#it.body]
   show link: it => html.a(
-    class: "underline underline-offset-4 hover:" + colors.accent,
+    class: cls("underline underline-offset-4", "hover:" + colors.accent),
     href: repr(it.dest).replace("\"", ""),
   )[#it.body]
-  show strike: it => html.del[#it.body]
-  show image: html.frame
-
-  // --------------------------------------------------------------------------
-  // Show Rules: Math
-  // --------------------------------------------------------------------------
-
-  // Set math font
-  show math.equation: set text(font: "Luciole Math", features: (ss01: 1))
-
-  let inside-figure = state("inside-figure", false)
-
-  show figure: it => {
-    inside-figure.update(true)
-    html.figure(class: "my-6 mx-auto w-fit")[#it]
-    inside-figure.update(false)
-  }
-  show math.equation.where(block: false): it => context {
-    if not inside-figure.get() { html.span(class: "inline-flex align-middle", role: "math")[#html.frame(it)] } else {
-      it
-    }
-  }
-  show math.equation.where(block: true): it => context {
-    if not inside-figure.get() { html.figure(class: "my-6 flex justify-center", role: "math")[#html.frame(it)] } else {
-      it
-    }
-  }
 
   // --------------------------------------------------------------------------
   // Render

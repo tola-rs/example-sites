@@ -1,77 +1,87 @@
+#import "/templates/tola.typ": wrap-page
 #import "/templates/base.typ": base, colors
-#import "/utils/helpers.typ" as utils
+#import "/components/layout.typ" as layout
+#import "/utils/tola.typ": cls, og-tags
+#import "@tola/site:0.0.0": info
+#import "@tola/current:0.0.0": headings
 
-#let post(
-  title: none,
-  date: none,
-  update: none,
-  author: none,
-  summary: none,
-  tags: (),
-  draft: false,
-  body,
-) = {
-  // Metadata for tola
-  [#metadata((
-    title: title,
-    date: date,
-    update: update,
-    author: author,
-    summary: summary,
-    tags: tags,
-    draft: draft,
-  )) <tola-meta>]
+#let post = wrap-page(
+  base: base,
 
-  // --------------------------------------------------------------------------
-  // Show Rules: Headings (Specific to Posts: Anchors)
-  // --------------------------------------------------------------------------
+  // custom html head
+  // `m`: page metadata
+  head: m => og-tags(
+    title: m.title,
+    description: m.summary,
+    type: "article",
+    site-name: info.title,
+    author: m.author,
+    published: m.date,
+    tags: m.tags,
+  ),
 
-  show heading.where(level: 1): it => {
-    let id = lower(repr(it.body).replace("\"", "").replace(" ", "-"))
-    html.h2(class: "text-2xl font-bold mt-8 mb-4 " + colors.accent, id: id)[
-      #html.a(class: "hover:underline underline-offset-4", href: "#" + id)[#it.body]
+  // custom html body
+  // `body`: page body
+  // `m`: page metadata
+  view: (body, m) => {
+    // Show rules
+    show heading.where(level: 1): it => {
+      let id = lower(repr(it.body).replace("\"", "").replace(" ", "-"))
+      html.h2(class: cls("text-2xl font-bold mt-8 mb-4", colors.accent), id: id)[
+        #html.a(class: "hover:underline underline-offset-4", href: "#" + id)[#it.body]
+      ]
+    }
+    show heading.where(level: 2): it => {
+      let id = lower(repr(it.body).replace("\"", "").replace(" ", "-"))
+      html.h3(class: "text-xl font-semibold mt-6 mb-3", id: id)[
+        #html.a(class: "hover:underline underline-offset-4", href: "#" + id)[#it.body]
+      ]
+    }
+
+    // Views
+    let title-view = if m.title != none {
+      html.h1(class: "text-3xl sm:text-4xl font-bold text-center my-6")[#m.title]
+    }
+
+    let subtitle-view = if m.date != none or m.author != none {
+      let parts = ()
+      if m.date != none { parts.push(m.date.display("[year]-[month]-[day]")) }
+      if m.author != none { parts.push("by " + m.author) }
+      html.div(class: cls("text-center", colors.muted))[#parts.join(" · ")]
+    }
+
+    let summary-view = if m.summary != none {
+      html.div(class: cls("text-center italic my-4", colors.muted))[#m.summary]
+    }
+
+    let tags-view = if m.tags.len() > 0 {
+      html.div(class: "flex flex-wrap justify-center gap-2 my-4")[
+        #for tag in m.tags { html.span(class: "px-2 py-1 text-sm bg-surface rounded text-cyan-400")[#tag] }
+      ]
+    }
+
+    // TOC using headings from @tola/current
+    let toc-view = if headings.len() > 0 {
+      let heading-id(text) = lower(text.replace(" ", "-"))
+      html.nav(class: "my-6 p-4 border border-white/10")[
+        #html.div(class: "font-bold mb-3")[Contents]
+        #html.div(class: "text-sm space-y-1")[
+          #for h in headings {
+            let id = heading-id(h.text)
+            let indent = if h.level == 1 { "" } else { "pr-2" }
+            let prefix = if h.level == 1 { "" } else { "→" }
+            let prefix = html.span(class: cls("text-white/40", indent))[#prefix]
+            let text = html.a(class: "hover:text-sky-400 hover:underline underline-offset-4", href: "#" + id)[#h.text]
+            html.div(class: "")[
+              #prefix#text
+            ]
+          }
+        ]
+      ]
+    }
+
+    html.article(class: "space-y-4")[
+      #title-view #subtitle-view #tags-view #summary-view #toc-view #layout.hr #body
     ]
-  }
-  show heading.where(level: 2): it => {
-    let id = lower(repr(it.body).replace("\"", "").replace(" ", "-"))
-    html.h3(class: "text-xl font-semibold mt-6 mb-3", id: id)[
-      #html.a(class: "hover:underline underline-offset-4", href: "#" + id)[#it.body]
-    ]
-  }
-
-  // --------------------------------------------------------------------------
-  // Views
-  // --------------------------------------------------------------------------
-
-  let title-view = if title != none {
-    html.h1(class: "text-3xl sm:text-4xl font-bold text-center my-6")[#title]
-  }
-
-  let subtitle-view = if date != none or author != none {
-    let parts = ()
-    if date != none { parts.push(date) }
-    if author != none { parts.push("by " + author) }
-    html.div(class: "text-center " + colors.muted)[#parts.join(" · ")]
-  }
-
-  let summary-view = if summary != none {
-    html.div(class: "text-center italic my-4 " + colors.muted)[#summary]
-  }
-
-  let tags-view = if tags.len() > 0 {
-    html.div(class: "flex flex-wrap justify-center gap-2 my-4")[
-      #for tag in tags { html.span(class: "px-2 py-1 text-sm bg-surface rounded text-cyan-400")[#tag] }
-    ]
-  }
-
-  // --------------------------------------------------------------------------
-  // Render
-  // --------------------------------------------------------------------------
-
-  show: base
-
-  html.article(class: "space-y-4")[
-    #title-view #subtitle-view #tags-view #summary-view #utils.hr #body
-  ]
-}
-
+  },
+)
