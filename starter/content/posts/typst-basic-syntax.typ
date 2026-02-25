@@ -3,7 +3,7 @@
 
 #let args = (
   title: "Typst Basic Syntax",
-  date: "2026-02-24",
+  date: "2026-02-25",
   author: "Tola",
   summary: [Typst syntax guide and how it renders to HTML],
   tags: ("typst", "html", "tutorial"),
@@ -184,4 +184,4 @@ Typst's `#image` embeds images as base64 inside SVG. For HTML `<img>` tags with 
 #img("/images/photo.webp", alt: "A sunset photo", class: "mx-auto w-64")
 ```
 
-#img("/images/photo.webp", alt: "A sunset photo", class: "mx-auto w-64")
+#img("/images/photo.webp", alt: "A sunset photo", class: "mx-auto w-[100pt]")

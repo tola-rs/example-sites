@@ -27,17 +27,25 @@
 
 = Pinned
 
-#let posts = (
+#let pinned-posts = (
   pages()
-    .filter(p => "/posts/" in p.permalink)
     .filter(p => p.at("draft", default: false) == false)
     .filter(p => p.at("pinned", default: false) == true)
-    .sorted(key: p => p.date)
-    .rev()
 )
 
+// Sort by date if available, otherwise keep original order
+#let pinned-posts = {
+  let with-date = pinned-posts.filter(p => p.at("date", default: none) != none)
+  let without-date = pinned-posts.filter(p => p.at("date", default: none) == none)
+  with-date.sorted(key: p => p.date).rev() + without-date
+}
+
 #html.div(class: "space-y-6")[
-  #for post in posts.slice(0, calc.min(posts.len(), 5)) {
+  #for post in pinned-posts.slice(0, calc.min(pinned-posts.len(), 10)) {
     ui.post-card(post)
   }
+]
+
+#if pinned-posts.len() == 0 [
+  #html.p(class: "text-muted italic")[No pinned posts yet.]
 ]

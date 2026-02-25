@@ -10,8 +10,8 @@
 
   // custom html head
   // `m`: page metadata
-  head: m => {
-    og-tags(
+  head: m => [
+    #og-tags(
       title: m.title,
       description: m.summary,
       type: "article",
@@ -20,10 +20,10 @@
       published: m.date,
       tags: m.tags,
     )
-    if m.title != none {
+    #if m.title != none {
       set-tab-title(m.title + " | " + info.title)
     }
-  },
+  ],
 
   // custom html body
   // `body`: page body
@@ -85,7 +85,7 @@
       ]
     }
 
-    html.article(class: "space-y-20 ")[
+    html.article(class: "space-y-6")[
       #title-view #subtitle-view #tags-view #summary-view #toc-view #layout.hr #body
     ]
   },
