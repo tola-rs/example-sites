@@ -25,33 +25,13 @@
 + *Tailwind CSS* — Utility-first styling out of the box
 + *Math Support* — Beautiful equations with Typst
 
-// ----------------------------------------------------------------------------
-// Demo Content
-// ----------------------------------------------------------------------------
-
-= Math Demo
-
-Inline math: $e^(i pi) + 1 = 0$
-
-Block math:
-
-$ integral_0^infinity e^(-x^2) d x = sqrt(pi) / 2 $
-
-= Table with Math and Code
-
-#table(
-  columns: 2,
-  [Code], [Math],
-  [`x*x + y*y`], [$x^2 + y^2 = r^2$],
-  [`let sum = a + b;`], [$sum_(i=1)^n i = n(n+1)/2$],
-)
-
-= Recent Posts
+= Pinned
 
 #let posts = (
   pages()
     .filter(p => "/posts/" in p.permalink)
     .filter(p => p.at("draft", default: false) == false)
+    .filter(p => p.at("pinned", default: false) == true)
     .sorted(key: p => p.date)
     .rev()
 )

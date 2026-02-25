@@ -7,6 +7,7 @@
   author: "Tola",
   summary: [Typst syntax guide and how it renders to HTML],
   tags: ("typst", "html", "tutorial"),
+  pinned: true,
 )
 
 #show: post.with(..args)
@@ -117,20 +118,18 @@ Ordered list with `+`:
 
 ```typst
 #table(
-  columns: 3,
-  [Feature], [Status], [Notes],
-  [Math], [✓], [Full support],
-  [Code], [✓], [Syntax highlighting],
-  [Images], [✓], [SVG, PNG, JPEG],
+  columns: 2,
+  [Code], [Math],
+  [`x*x + y*y`], [$x^2 + y^2 = r^2$],
+  [`let sum = a + b;`], [$sum_(i=1)^n i = n(n+1)/2$],
 )
 ```
 
 #table(
-  columns: 3,
-  [Feature], [Status], [Notes],
-  [Math], [✓], [Full support],
-  [Code], [✓], [Syntax highlighting],
-  [Images], [✓], [SVG, PNG, JPEG],
+  columns: 2,
+  [Code], [Math],
+  [`x*x + y*y`], [$x^2 + y^2 = r^2$],
+  [`let sum = a + b;`], [$sum_(i=1)^n i = n(n+1)/2$],
 )
 
 == Blockquotes
@@ -162,16 +161,16 @@ console.log("Hello");
 == Math
 
 ```typst
-Inline: $E = m c^2$
+Inline: $e^(i pi) + 1 = 0$
 
 Block:
-$ integral_0^1 x^2 d x = 1/3 $
+$ integral_0^infinity e^(-x^2) d x = sqrt(pi) / 2 $
 ```
 
-Inline: $E = m c^2$
+Inline: $e^(i pi) + 1 = 0$
 
 Block:
-$ integral_0^1 x^2 d x = 1/3 $
+$ integral_0^infinity e^(-x^2) d x = sqrt(pi) / 2 $
 
 Math is rendered as SVG wrapped in semantic elements.
 

@@ -1,7 +1,7 @@
 #import "/templates/tola.typ": wrap-page
 #import "/templates/base.typ": base, colors
 #import "/components/layout.typ" as layout
-#import "/utils/tola.typ": cls, og-tags
+#import "/utils/tola.typ": cls, og-tags, set-tab-title
 #import "@tola/site:0.0.0": info
 #import "@tola/current:0.0.0": headings
 
@@ -10,15 +10,20 @@
 
   // custom html head
   // `m`: page metadata
-  head: m => og-tags(
-    title: m.title,
-    description: m.summary,
-    type: "article",
-    site-name: info.title,
-    author: m.author,
-    published: m.date,
-    tags: m.tags,
-  ),
+  head: m => {
+    og-tags(
+      title: m.title,
+      description: m.summary,
+      type: "article",
+      site-name: info.title,
+      author: m.author,
+      published: m.date,
+      tags: m.tags,
+    )
+    if m.title != none {
+      set-tab-title(m.title + " | " + info.title)
+    }
+  },
 
   // custom html body
   // `body`: page body
@@ -80,7 +85,7 @@
       ]
     }
 
-    html.article(class: "space-y-4")[
+    html.article(class: "space-y-20 ")[
       #title-view #subtitle-view #tags-view #summary-view #toc-view #layout.hr #body
     ]
   },

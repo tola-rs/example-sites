@@ -19,8 +19,9 @@ url = "https://tola-ssg.github.io/example-sites/starter"
 elements = ['<meta name="darkreader-lock">']
 
 [site.nav]
-enable = true
+spa = true
 transition = {style = "fade", time = 200}
+preload = {enable = false, delay = 200}
 
 [site.seo]
 auto_og = true
