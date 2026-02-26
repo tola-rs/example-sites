@@ -1,5 +1,5 @@
 #import "@tola/pages:0.0.0": pages
-#import "@tola/current:0.0.0": path, children
+#import "@tola/current:0.0.0": children, current-permalink
 #import "/templates/page.typ": page
 #import "/components/ui.typ" as ui
 
@@ -18,17 +18,17 @@
 
 = About
 
-This section contains demonstrations of Tola features. Each article showcases a specific capability, making it easy to:
+This section contains demonstrations of Tola features. \
+Each article showcases a specific capability, making it easy to:
 
 - Test new features during development
 - Reference implementations for issues and PRs
-- Learn how to use Tola's virtual packages
 
 = Articles
 
-#let showcase-posts = (pages()
-  .filter(p => "/showcase/" in p.permalink and p.permalink != path)
-  .filter(p => p.at("draft", default: false) == false))
+#let showcase-posts = (
+  pages().filter(p => "/showcase/" in p.permalink and p.permalink != current-permalink)
+)
 
 // Sort by date if available
 #let showcase-posts = {

@@ -25,7 +25,9 @@
 
   show: tola.tola-base.with(
     figure-class: "my-6 mx-auto w-fit",
-    math-inline-class: "inline-flex align-middle text-lg",
+    // Keep inline math in normal inline formatting context so SVG
+    // `vertical-align` baseline offsets are effective.
+    math-inline-class: "inline-block align-baseline text-lg",
     math-block-class: "my-6 flex justify-center text-2xl",
     math-font: "Luciole Math",
   )
@@ -70,4 +72,3 @@
 
   html.main(class: "max-w-3xl mx-auto px-4 py-8")[#body]
 }
-

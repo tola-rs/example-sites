@@ -184,4 +184,4 @@ Typst's `#image` embeds images as base64 inside SVG. For HTML `<img>` tags with 
 #img("/images/photo.webp", alt: "A sunset photo", class: "mx-auto w-64")
 ```
 
-#img("/images/photo.webp", alt: "A sunset photo", class: "mx-auto w-[100pt]")
+#img("/images/photo.webp", alt: "A sunset photo", class: "mx-auto w-80")

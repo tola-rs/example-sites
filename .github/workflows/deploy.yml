@@ -45,7 +45,7 @@ jobs:
       # - name: Build example-site-1
       #   run: |
       #     cd example-site-1
-      #     tola build --clean --base-url https://tola-ssg.github.io/example-sites/example-site-1
+      #     tola build --clean --base-url https://tola-rs.github.io/example-sites/example-site-1
 
       - name: Prepare deployment directory
         run: |

@@ -1,7 +1,7 @@
 #import "/templates/tola.typ": wrap-page
 #import "/templates/base.typ": base, colors
 #import "/components/layout.typ" as layout
-#import "/utils/tola.typ": cls, og-tags, set-tab-title
+#import "/utils/tola.typ": cls, og-tags, set-tab-title, to-string
 #import "@tola/site:0.0.0": info
 #import "@tola/current:0.0.0": headings
 
@@ -21,7 +21,7 @@
       tags: m.tags,
     )
     #if m.title != none {
-      set-tab-title(m.title + " | " + info.title)
+      html.title(m.title + " | " + info.title)
     }
   ],
 
@@ -29,15 +29,17 @@
   // `body`: page body
   // `m`: page metadata
   view: (body, m) => {
+    let heading-id(text) = lower(to-string(text).replace("/", "-"))
+
     // Show rules
     show heading.where(level: 1): it => {
-      let id = lower(repr(it.body).replace("\"", "").replace(" ", "-"))
+      let id = heading-id(it.body)
       html.h2(class: cls("text-2xl font-bold mt-8 mb-4", colors.accent), id: id)[
         #html.a(class: "hover:underline underline-offset-4", href: "#" + id)[#it.body]
       ]
     }
     show heading.where(level: 2): it => {
-      let id = lower(repr(it.body).replace("\"", "").replace(" ", "-"))
+      let id = heading-id(it.body)
       html.h3(class: "text-xl font-semibold mt-6 mb-3", id: id)[
         #html.a(class: "hover:underline underline-offset-4", href: "#" + id)[#it.body]
       ]
@@ -67,7 +69,6 @@
 
     // TOC using headings from @tola/current
     let toc-view = if headings.len() > 0 {
-      let heading-id(text) = lower(text.replace(" ", "-"))
       html.nav(class: "my-6 p-4 border border-white/10")[
         #html.div(class: "font-bold mb-3")[Contents]
         #html.div(class: "text-sm space-y-1")[
@@ -75,9 +76,10 @@
             let id = heading-id(h.text)
             let indent = if h.level == 1 { "" } else { "pr-2" }
             let prefix = if h.level == 1 { "" } else { "→" }
-            let prefix = html.span(class: cls("text-white/40", indent))[#prefix]
+            let prefix = html.span(class: cls("text-white/75", indent))[#prefix]
             let text = html.a(class: "hover:text-sky-400 hover:underline underline-offset-4", href: "#" + id)[#h.text]
-            html.div(class: "")[
+            let item-class = if h.level == 1 { "mt-5 first:mt-0" } else { "" }
+            html.div(class: item-class)[
               #prefix#text
             ]
           }

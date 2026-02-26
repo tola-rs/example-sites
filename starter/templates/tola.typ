@@ -8,31 +8,70 @@
 // Provides page template with metadata for SSG
 
 // ============================================================================
-// Format Detection: is-html vs target()
-// ============================================================================
-//
-// Two ways to detect HTML output, each with different use cases:
-//
-// 1. is-html (sys.inputs.format == "html")
-//    - Static value injected by Tola at compile time
-//    - Works during scan phase (Eval-only, no Layout)
-//    - Use for: image show rules (need to extract src paths during scan)
-//    - Caveat: Still "html" even inside html.frame() internal rendering
-//
-// 2. context { target() }
-//    - Runtime check, returns "html" or "paged"
-//    - Returns "paged" inside html.frame() (when rendering math to SVG)
-//    - Use for: math show rules with html.frame() (avoids "paged export" warnings)
-//    - Caveat: Requires context block, not evaluated during scan phase
-//
-// For typst CLI users: add --input format=html when compiling to HTML.
-#let is-html = sys.inputs.at("format", default: none) == "html"
-
-// ============================================================================
 // Shared State
 // ============================================================================
 
 #let inside-figure = state("_tola-inside-figure", false)
+
+// Inline math baseline fix (pin + measure).
+#let bounded(eq) = text(top-edge: "bounds", bottom-edge: "bounds", eq)
+#let equations-height-dict = state("eq_height_dict", (:))
+#let is-inside-pin = state("inside_pin", false)
+
+#let pin(label) = context {
+  let height = here().position().y
+  equations-height-dict.update(dict => {
+    if label in dict.keys() or height < 0.000001pt {
+      dict
+    } else {
+      dict.insert(label, height)
+      dict
+    }
+  })
+}
+
+#let add-pin(eq) = {
+  let label = repr(eq)
+  is-inside-pin.update(true)
+  $ inline(pin(label)#bounded(eq)) $
+  is-inside-pin.update(false)
+}
+
+#let to-em(pt) = str(pt / text.size.pt()) + "em"
+
+#let math-span(class: "", style: none, body) = {
+  let attrs = (role: "math")
+  if class != "" {
+    attrs.insert("class", class)
+  }
+  if style != none {
+    attrs.insert("style", style)
+  }
+  html.elem("span", body, attrs: attrs)
+}
+
+#let render-inline-math(eq, class: "") = context {
+  if is-inside-pin.get() {
+    return math-span(class: class)[#html.frame(bounded(eq))]
+  }
+
+  let label = repr(eq)
+  let cache = equations-height-dict.final()
+  if label in cache.keys() {
+    let reference-height = cache.at(label, default: none)
+    equations-height-dict.update(dict => {
+      dict.insert(label, reference-height)
+      dict
+    })
+
+    let measured-height = measure(bounded(eq)).height
+    let shift = measured-height - reference-height
+    let style = "vertical-align: -" + to-em(shift.pt()) + ";"
+    math-span(class: class, style: style)[#html.frame(bounded(eq))]
+  } else {
+    math-span(class: class)[#box(html.frame(add-pin(eq)))]
+  }
+}
 
 // ============================================================================
 // Base Template (Show Rules)
@@ -47,11 +86,14 @@
   math-font: "New Computer Modern Math",
   body,
 ) = {
-  show figure: it => {
-    if is-html {
+  // Figure wrapper: use target() to avoid html.elem warnings inside html.frame()
+  // internal paged render passes.
+  show figure: it => context {
+    if target() == "html" {
       inside-figure.update(true)
-      html.figure(class: figure-class)[#it]
+      let wrapped = html.figure(class: figure-class)[#it]
       inside-figure.update(false)
+      wrapped
     } else { it }
   }
 
@@ -65,13 +107,12 @@
     bottom-edge: "bounds",
   )
 
-  // Math equations: use target() instead of is-html
+  // Math equations: use target()
   // - html.frame() internally renders to SVG using "paged" mode
-  // - If we used is-html, the show rule would try to wrap again, causing warnings
   // - target() returns "paged" inside html.frame(), so the show rule skips
   show math.equation.where(block: false): it => context {
     if target() == "html" and not inside-figure.get() {
-      html.span(class: math-inline-class, role: "math")[#html.frame(it)]
+      render-inline-math(it, class: math-inline-class)
     } else { it }
   }
 
@@ -88,13 +129,13 @@
 // Date Utilities
 // ============================================================================
 
-/// Parse date string to datetime (simple version).
+/// Parse date string to datetime (strict version).
 #let _parse-date(s) = {
   if s == none { return none }
   if type(s) == datetime { return s }
   let s = str(s).split("T").at(0)
   let parts = s.split("-")
-  if parts.len() != 3 { return none }
+  assert(parts.len() == 3, message: "Invalid date format: '" + s + "', expected YYYY-MM-DD")
   datetime(year: int(parts.at(0)), month: int(parts.at(1)), day: int(parts.at(2)))
 }
 
@@ -145,14 +186,10 @@
 
   show: tola-base
 
-  if is-html {
-    html.html[
-      #html.head[#head]
-      #html.body[#body]
-    ]
-  } else {
-    body
-  }
+  html.html[
+    #html.head[#head]
+    #html.body[#body]
+  ]
 }
 
 // ============================================================================

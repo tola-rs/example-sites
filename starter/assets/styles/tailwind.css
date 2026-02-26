@@ -27,11 +27,11 @@
     }
 
     code {
-        @apply bg-surface px-1.5 py-0.5 rounded text-sm;
+        @apply bg-surface px-1.5 py-0.5 rounded-sm text-sm;
     }
 
     pre {
-        @apply bg-surface p-2 rounded-lg overflow-x-auto;
+        @apply bg-surface p-2 rounded-sm overflow-x-auto;
     }
 
     pre code {

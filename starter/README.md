@@ -70,25 +70,32 @@ This post was published on #(args.date).
 
 - **Colors**: Edit the `@theme` section in `assets/styles/tailwind.css`
 - **Layout**: Modify `templates/base.typ`
-- **Colors**: Edit the `@theme` section in `assets/styles/tailwind.css`
-- **Layout**: Modify `templates/base.typ`
-- **Components**: Add reusable functions in `utils/`
+- **Components**: Add reusable functions in `components/` or `utils/`
 
-## Data Architecture
+## Virtual Package Examples
 
-Tola provides a set of virtual data files (JSON) that you can access in your Typst templates to build dynamic pages.
+Tola injects virtual packages at compile time, so you can query site data directly in Typst:
 
-- `/_data/pages.json`: Contains metadata for all pages (posts, index, etc.).
-- `/_data/tags.json`: Detailed tag index mapping tags to lists of pages.
+- `@tola/site:0.0.0` -> `info`
+- `@tola/pages:0.0.0` -> `pages()`, `by-tag(tag)`, `by-tags(..tags)`, `all-tags()`
+- `@tola/current:0.0.0` -> current page context (`permalink`, `parent-permalink`, `path`, `filename`, `breadcrumbs`, `prev`, `next`, ...)
 
-Example usage in `index.typ`:
+Example usage:
 
 ```typst
-#let pages = json("/_data/pages.json")
-#let posts = pages.filter(p => p.url.starts-with("/posts/"))
+#import "@tola/pages:0.0.0": pages
+
+#let recent = (pages()
+  .filter(p => "/posts/" in p.permalink)
+  .filter(p => p.at("date", default: none) != none)
+  .sorted(key: p => p.date)
+  .rev()
+  .slice(0, 5))
 ```
 
-This decoupled architecture allows you to freely organize your content structure and build custom index pages without relying on rigid framework logic.
+For full "code + rendered output" examples, check:
+
+- `content/posts/virtual-packages.typ`
 
 ## Typst Tips
 
@@ -123,5 +130,3 @@ Make sure to set your repository URL in `tola.toml` under `[deploy.github]`.
 - [Tola Documentation](https://github.com/tola-ssg/tola-ssg)
 - [Typst Documentation](https://typst.app/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-
-

@@ -28,16 +28,14 @@
 = Pinned
 
 #let pinned-posts = (
-  pages()
-    .filter(p => p.at("draft", default: false) == false)
-    .filter(p => p.at("pinned", default: false) == true)
+  pages().filter(p => p.at("pinned", default: false) == true)
 )
 
-// Sort by date if available, otherwise keep original order
+// Sort pinned posts by date in ascending order; undated posts stay at the end
 #let pinned-posts = {
   let with-date = pinned-posts.filter(p => p.at("date", default: none) != none)
   let without-date = pinned-posts.filter(p => p.at("date", default: none) == none)
-  with-date.sorted(key: p => p.date).rev() + without-date
+  with-date.sorted(key: p => p.date) + without-date
 }
 
 #html.div(class: "space-y-6")[

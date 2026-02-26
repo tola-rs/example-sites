@@ -3,14 +3,16 @@
 # ==============================================================================
 
 [site.info]
-title = "My Blog"
-author = "Your Name"
+title = "Starter"
+author = "Tola"
 email = "you@example.com"
 description = "A blog built with Typst and Tola"
 language = "en"
-url = "https://tola-ssg.github.io/example-sites/starter"
+url = "https://tola-rs.github.io/example-sites/starter"
 
 [site.info.extra]
+custom0 = "ABC"
+custom1 = "XYZ"
 
 [site.header]
 # icon = "assets/images/favicon.ico"
@@ -20,8 +22,6 @@ elements = ['<meta name="darkreader-lock">']
 
 [site.nav]
 spa = true
-transition = {style = "fade", time = 200}
-preload = {enable = false, delay = 200}
 
 [site.seo]
 auto_og = true
@@ -58,7 +58,6 @@ case = "lower"
 enable = true
 path = "assets/styles/tailwind.css"
 command = ["tailwindcss"]
-
 
 [serve]
 interface = "127.0.0.1"
